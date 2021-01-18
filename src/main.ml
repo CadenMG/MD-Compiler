@@ -4,6 +4,7 @@ open Printf
 let summary =
   "This is a small markdown compiler project"
 
+
 let help = 
   "Enter the markdown file to parse as: .\main <my-file.md>"
 
@@ -45,6 +46,15 @@ let asterisk line =
               )
 
 
+let dash line =
+  let n = String.length line in
+  match line with
+  | "---" -> ["<hr>"]
+  | _ ->  match String.sub line 0 2 with
+          | "- " -> ["<li>" ^ String.sub line 2 (n - 2) ^ "</li>"]
+          | _ -> ["<p>" ^ line ^ "</p>"]
+
+
 let parse_line line =
   let n = String.length line in
   match n with
@@ -53,6 +63,7 @@ let parse_line line =
         match String.get line 0 with
         | '#' -> hashtag line
         | '*' -> asterisk line
+        | '-' -> dash line
         | _ -> ["<p>" ^ line ^ "</p>"]
 
 
