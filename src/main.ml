@@ -14,14 +14,46 @@ let rec to_string lines acc =
   | h::t -> to_string t (acc ^ h ^ "\n")
 
 
+let hashtag line =
+  let n = String.length line in
+  match n with 
+  | 1 -> [] 
+  | _ -> 
+        match String.get line 1 with
+        | '#' -> 
+        (match n with | 2 -> [] | _ -> ["<h2>" ^ String.sub line 2 (n - 2) ^ "</h2>"])
+        | _ -> ["<h1>" ^ String.sub line 1 (n - 1) ^ "</h1>"]
+
+
+let asterisk line =
+  let n = String.length line in
+  match n with
+  | 1 | 2 -> ["<p>" ^ line ^ "</p>"]
+  | _ ->
+        match String.sub line 0 2 with
+        | "**" -> 
+                  (
+                  match String.sub line (n - 2) 2 with
+                  | "**" -> ["<strong>" ^ String.sub line 2 (n - 4) ^ "</strong>"]
+                  | _ -> ["<p>" ^ line ^ "</p>"]
+                  )
+        | _ ->
+              (
+              match String.get line (n - 1) with
+              | '*' -> ["<em>" ^ String.sub line 1 (n - 2) ^ "</em>"]
+              | _ -> ["<p>" ^ line ^ "</p>"]
+              )
+
+
 let parse_line line =
   let n = String.length line in
   match n with
   | 0 -> [""]
   | _ -> 
         match String.get line 0 with
-        | '#' -> (match n with | 1 -> [] | _ -> ["<h1>" ^ String.sub line 1 (n - 1) ^ "<h1>"])
-        | _ -> ["<p>" ^ line ^ "<p>"]
+        | '#' -> hashtag line
+        | '*' -> asterisk line
+        | _ -> ["<p>" ^ line ^ "</p>"]
 
 
 let rec parse_md_file lines =
